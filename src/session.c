@@ -1,0 +1,149 @@
+/**
+ * WarfaceBot, a blind XMPP client for Warface (FPS)
+ * Copyright (C) 2015-2017 Levak Borok <levak92@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <wb_session.h>
+#include <wb_list.h>
+#include <wb_friend.h>
+#include <wb_clanmate.h>
+#include <wb_mission.h>
+#include <wb_masterserver.h>
+#include <wb_item.h>
+#include <wb_room.h>
+#include <wb_xmpp_wf.h>
+#include <wb_querydump.h>
+#include <wb_cvar.h>
+#include <wb_tools.h>
+#include <wb_quickplay.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+struct session session = { 0 };
+
+void session_init(int fd, const char *online_id)
+{
+    time_t now = time(NULL);
+
+    memset(&session, 0, sizeof (struct session));
+
+    if (cvar.online_bootstrap != NULL)
+    {
+        FORMAT(session.online.jid.host,
+               "%s.%s",
+               cvar.online_bootstrap,
+               cvar.online_host);
+    }
+    else
+    {
+        FORMAT(session.online.jid.host,
+               "%s",
+               cvar.online_host);
+    }
+
+    FORMAT(session.online.jid.k01,
+           "k01.%s",
+           session.online.jid.host);
+
+    FORMAT(session.online.jid.ms,
+           "ms.%s",
+           session.online.jid.host);
+
+    FORMAT(session.online.jid.wfc,
+           "wfc.%s",
+           session.online.jid.host);
+
+    FORMAT(session.online.jid.muc,
+           "conference.%s",
+           cvar.online_host);
+
+    session.wfs = fd;
+    session.state = STATE_INIT;
+
+    session.xmpp.last_query = now;
+
+    session.online.last_status_update = now;
+    session.online.last_status_change = now;
+
+    session.gameroom.leave_timeout = now;
+
+    friend_list_init();
+    clanmate_list_init();
+    mission_list_init();
+    room_list_init();
+    masterserver_list_init(NULL);
+
+    querycache_items_init();
+    querycache_shop_get_offers_init();
+    querycache_quickplay_maplist_init();
+    querycache_get_configs_init();
+
+#ifdef DEBUG
+    querydump_init(online_id);
+#endif /* DEBUG */
+}
+
+void session_free(void)
+{
+    free(session.online.jid.k01);
+    free(session.online.jid.ms);
+    free(session.online.jid.muc);
+    free(session.online.jid.wfc);
+    free(session.online.jid.host);
+
+    friend_list_free();
+    clanmate_list_free();
+    mission_list_free();
+    gameroom_sync_free();
+    room_list_free();
+    masterserver_list_free();
+    profile_item_list_free();
+    quickplay_free();
+
+    free(session.xmpp.jid);
+
+    free(session.online.id);
+    free(session.online.channel);
+    free(session.online.channel_type);
+    free(session.online.active_token);
+
+    free(session.online.place_token);
+    free(session.online.place_info_token);
+    free(session.online.mode_info_token);
+    free(session.online.mission_info_token);
+
+    free(session.gameroom.jid);
+    free(session.gameroom.group_id);
+
+    free(session.profile.id);
+    free(session.profile.nickname);
+    free(session.profile.clan.name);
+    free(session.profile.primary_weapon);
+    free(session.profile.progression.mission_unlocked);
+
+    querycache_items_free();
+    querycache_shop_get_offers_free();
+    querycache_quickplay_maplist_free();
+    querycache_get_configs_free();
+
+#ifdef DEBUG
+    querydump_free();
+#endif /* DEBUG */
+
+    memset(&session, 0, sizeof (struct session));
+}

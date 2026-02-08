@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+
+  <name>WarfaceBot</name>
+  <creationDate>2 Jan 2016</creationDate>
+  <author>Levak Borok</author>
+  <copyright>Copyright (C) 2015-2017 Levak Borok</copyright>
+  <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
+  <authorEmail>levak92@gmail.com</authorEmail>
+  <description>A headless XMPP client for Warface (FPS)</description>
+
+  <interface name="org.levak.WarfacebotMngr">
+    <method name="Quit">
+    </method>
+
+    <!-- From UI -->
+    <method name="Create">
+      <arg name="DBusID" type="s" direction="in" />
+      <arg name="Server" type="s" direction="in" />
+      <arg name="Options" type="s" direction="in" />
+    </method>
+
+    <!-- From WB -->
+    <method name="InstanceReady">
+      <arg name="DBusID" type="s" direction="in" />
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Server" type="s" direction="in" />
+      <arg name="BusName" type="s" direction="in" />
+      <arg name="Options" type="s" direction="in" />
+      <arg name="RootPath" type="s" direction="in" />
+    </method>
+    <method name="InstanceExit">
+      <arg name="BusName" type="s" direction="in" />
+    </method>
+  </interface>
+
+  <interface name="org.levak.WarfacebotMngr.Instance">
+    <property name="DBusID" type="s" access="read" />
+    <property name="Nickname" type="s" access="read" />
+    <property name="Server" type="s" access="read" />
+    <property name="BusName" type="s" access="read" />
+    <property name="Starttime" type="i" access="read" />
+  </interface>
+
+  <interface name="org.levak.Warfacebot">
+    <!-- General -->
+    <method name="Quit">
+    </method>
+    <method name="Restart">
+    </method>
+
+    <!-- Buddy management -->
+    <method name="Buddies">
+      <arg name="Friends" type="a(sii)" direction="out" />
+      <arg name="Clanmates" type="a(sii)" direction="out" />
+    </method>
+    <method name="BuddyAdd">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="ErrorCode" type="i" direction="out" />
+    </method>
+    <method name="BuddyFollow">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="BuddyInvite">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="BuddyRemove">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="BuddyRemoveAll"> 
+    </method>
+    <method name="BuddyWhisper">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Message" type="s" direction="in" />
+    </method>
+    <method name="BuddyWhois">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Whois" type="a{sv}" direction="out" />
+    </method>
+    <method name="BuddyLastSeen">
+      <arg name="NickOrPID" type="s" direction="in" />
+      <arg name="Last" type="a{sv}" direction="out" />
+    </method>
+
+    <!-- Crown Challenge -->
+    <method name="CrownChallenge">
+      <arg name="Missions" type="a{sv}" direction="out" />
+    </method>
+
+    <!-- Player Peer Info -->
+    <method name="PlayerPeerInfo">
+      <arg name="NickOrOID" type="s" direction="in" />
+      <arg name="PlayerInfo" type="a{sv}" direction="out" />
+    </method>
+
+    <!-- Room management -->
+    <method name="RoomChangeMap">
+      <arg name="MapName" type="s" direction="in" />
+    </method>
+    <method name="RoomChangeTeam">
+    </method>
+    <method name="RoomGiveMaster">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="RoomLeave">
+    </method>
+    <method name="RoomRename">
+      <arg name="Name" type="s" direction="in" />
+    </method>
+    <method name="RoomOpen">
+      <arg name="MapName" type="s" direction="in" />
+    </method>
+    <method name="RoomParticipants">
+      <arg name="Participants" type="as" direction="out" />
+    </method>
+    <method name="RoomReady">
+    </method>
+    <method name="RoomTakeClass">
+      <arg name="ClassName" type="s" direction="in" />
+    </method>
+    <method name="RoomSay">
+      <arg name="Message" type="s" direction="in" />
+    </method>
+    <method name="RoomStart">
+    </method>
+    <method name="RoomGet">
+      <arg name="Channel" type="s" direction="in" />
+      <arg name="RoomType" type="i" direction="in" />
+      <arg name="Rooms" type="aa{sv}" direction="out" />
+    </method>
+
+    <!-- Quickplay -->
+    <method name="QuickplayOpen">
+      <arg name="MapName" type="s" direction="in" />
+    </method>
+    <method name="QuickplayInvite">
+      <arg name="Nickname" type="s" direction="in" />
+    </method>
+    <method name="QuickplayStart">
+    </method>
+    <method name="QuickplayCancel">
+    </method>
+
+    <!-- ChatRoom management -->
+    <method name="ChatRoomJoin">
+      <arg name="jid" type="s" direction="in" />
+    </method>
+    <method name="ChatRoomLeave">
+      <arg name="jid" type="s" direction="in" />
+    </method>
+
+    <!-- Channel management -->
+    <method name="ChannelSwitch">
+      <arg name="Channel" type="s" direction="in" />
+    </method>
+    <method name="ChannelStats">
+      <arg name="Stats" type="a(si)" direction="out" />
+    </method>
+
+    <!-- Clan management -->
+    <method name="ClanLeave">
+    </method>
+
+    <!-- Shop Offers -->
+    <method name="ShopOffers">
+      <arg name="Offers" type="a{sv}" direction="out" />
+    </method>
+
+
+    <!-- Signals -->
+<!--
+    <signal name="Invitation">
+      <arg name="From" type="s" direction="in" />
+    </signal>
+-->
+    <signal name="RoomMessage">
+      <arg name="Room" type="s" direction="in" />
+      <arg name="From" type="s" direction="in" />
+      <arg name="Message" type="s" direction="in" />
+    </signal>
+    <signal name="RoomPresence">
+      <arg name="FullJid" type="s" direction="in" />
+      <arg name="Joining" type="i" direction="in" />
+      <arg name="Node" type="s" direction="in" />
+    </signal>
+    <signal name="RoomKicked">
+      <arg name="Reason" type="i" direction="in" />
+    </signal>
+    <signal name="BuddyMessage">
+      <arg name="From" type="s" direction="in" />
+      <arg name="Message" type="s" direction="in" />
+    </signal>
+    <signal name="Notification">
+      <arg name="Message" type="s" direction="in" />
+    </signal>
+
+    <signal name="StatusUpdate">
+      <arg name="Nickname" type="s" direction="in" />
+      <arg name="Status" type="i" direction="in" />
+      <arg name="Experience" type="i" direction="in" />
+      <arg name="ClanPoints" type="i" direction="in" />
+    </signal>
+
+    <!-- Properties -->
+    <property name="Nickname" type="s" access="read" />
+    <property name="Status" type="i" access="read" />
+    <property name="Channel" type="s" access="read" />
+    <property name="ChannelType" type="s" access="read" />
+    <property name="UnlockedMissions" type="s" access="read" />
+    <property name="UnlockedClasses" type="i" access="read" />
+    <property name="UnlockedTutorials" type="i" access="read" />
+    <property name="PassedTutorials" type="i" access="read" />
+
+    <signal name="MatchResults">
+      <arg name="Results" type="a(siiiis)" direction="in" />
+    </signal>
+
+  </interface>
+</node>
